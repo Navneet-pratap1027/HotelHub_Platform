@@ -3,17 +3,18 @@ const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingSchema, reviewSchema } = require("./schema.js");
 
-// 1. Check Login
+// 1. Check Login (Modified for React/JSON)
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
-    req.session.redirectUrl = req.originalUrl;
-    req.flash("error", "You must be logged in first!");
-    return res.redirect("/login");
+    return res.status(401).json({ 
+      success: false, 
+      message: "You must be logged in first!" 
+    });
   }
   next();
 };
 
-// 2. Save Redirect URL (Post-login redirection ke liye)
+// 2. Save Redirect URL
 module.exports.saveRedirectUrl = (req, res, next) => {
   if (req.session.redirectUrl) {
     res.locals.redirectUrl = req.session.redirectUrl;
@@ -21,26 +22,31 @@ module.exports.saveRedirectUrl = (req, res, next) => {
   next();
 };
 
-// 3. Check Listing Ownership
+// 3. Check Listing Ownership (Fixed Crash)
 module.exports.isOwner = async (req, res, next) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
   
-  // Check agar listing exist karti hai
   if (!listing) {
-    req.flash("error", "Listing you are looking for does not exist!");
-    return res.redirect("/listings");
+    return res.status(404).json({ success: false, message: "Listing not found!" });
   }
 
-  // Check agar current user hi owner hai
+  // Pehle check karein currUser exist karta hai ya nahi
+  if (!res.locals.currUser) {
+    return res.status(401).json({ success: false, message: "Session expired, please login again." });
+  }
+
+  // Ab owner check karein
   if (!listing.owner.equals(res.locals.currUser._id)) {
-    req.flash("error", "You do not have permission as you are not the owner!");
-    return res.redirect(`/listings/${id}`);
+    return res.status(403).json({ 
+      success: false, 
+      message: "You do not have permission as you are not the owner!" 
+    });
   }
   next();
 };
 
-// 4. Validate Listing (Joi Schema)
+// 4. Validate Listing
 module.exports.validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
   if (error) {
@@ -51,7 +57,7 @@ module.exports.validateListing = (req, res, next) => {
   }
 };
 
-// 5. Validate Review (Joi Schema)
+// 5. Validate Review
 module.exports.validateReview = (req, res, next) => {
   let { error } = reviewSchema.validate(req.body);
   if (error) {
@@ -62,19 +68,20 @@ module.exports.validateReview = (req, res, next) => {
   }
 };
 
-// 6. Check Review Author
+// 6. Check Review Author (Fixed Crash)
 module.exports.isReviewAuthor = async (req, res, next) => {
   let { id, reviewId } = req.params;
   let review = await Review.findById(reviewId);
 
   if (!review) {
-    req.flash("error", "Review does not exist!");
-    return res.redirect(`/listings/${id}`);
+    return res.status(404).json({ success: false, message: "Review not found!" });
   }
 
-  if (!review.author.equals(res.locals.currUser._id)) {
-    req.flash("error", "You are not the author of this review");
-    return res.redirect(`/listings/${id}`);
+  if (!res.locals.currUser || !review.author.equals(res.locals.currUser._id)) {
+    return res.status(403).json({ 
+      success: false, 
+      message: "You are not the author of this review" 
+    });
   }
   next();
 };
