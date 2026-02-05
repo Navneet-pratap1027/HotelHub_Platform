@@ -3,7 +3,7 @@ const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingSchema, reviewSchema } = require("./schema.js");
 
-// 1. Check Login (Modified for React/JSON)
+// 1. Check Login
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ 
@@ -14,7 +14,7 @@ module.exports.isLoggedIn = (req, res, next) => {
   next();
 };
 
-// 2. Save Redirect URL
+// 2. Save Redirect URL (Zarurat nahi hai MERN mein, par rehne dein)
 module.exports.saveRedirectUrl = (req, res, next) => {
   if (req.session.redirectUrl) {
     res.locals.redirectUrl = req.session.redirectUrl;
@@ -22,7 +22,7 @@ module.exports.saveRedirectUrl = (req, res, next) => {
   next();
 };
 
-// 3. Check Listing Ownership (Fixed Crash)
+// 3. Check Listing Ownership (FIXED LOGIC)
 module.exports.isOwner = async (req, res, next) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
@@ -31,16 +31,16 @@ module.exports.isOwner = async (req, res, next) => {
     return res.status(404).json({ success: false, message: "Listing not found!" });
   }
 
-  // Pehle check karein currUser exist karta hai ya nahi
-  if (!res.locals.currUser) {
+  // MERN mein res.locals ki jagah req.user use karein
+  if (!req.user) {
     return res.status(401).json({ success: false, message: "Session expired, please login again." });
   }
 
-  // Ab owner check karein
-  if (!listing.owner.equals(res.locals.currUser._id)) {
+  // Owner compare karein
+  if (!listing.owner.equals(req.user._id)) {
     return res.status(403).json({ 
       success: false, 
-      message: "You do not have permission as you are not the owner!" 
+      message: "You do not have permission! You are not the owner." 
     });
   }
   next();
@@ -51,10 +51,9 @@ module.exports.validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
   if (error) {
     let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
+    return res.status(400).json({ success: false, message: errMsg }); // Error throw ki jagah JSON bhejye
   }
+  next();
 };
 
 // 5. Validate Review
@@ -62,13 +61,12 @@ module.exports.validateReview = (req, res, next) => {
   let { error } = reviewSchema.validate(req.body);
   if (error) {
     let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
+    return res.status(400).json({ success: false, message: errMsg });
   }
+  next();
 };
 
-// 6. Check Review Author (Fixed Crash)
+// 6. Check Review Author (FIXED LOGIC)
 module.exports.isReviewAuthor = async (req, res, next) => {
   let { id, reviewId } = req.params;
   let review = await Review.findById(reviewId);
@@ -77,7 +75,8 @@ module.exports.isReviewAuthor = async (req, res, next) => {
     return res.status(404).json({ success: false, message: "Review not found!" });
   }
 
-  if (!res.locals.currUser || !review.author.equals(res.locals.currUser._id)) {
+  // res.locals ki jagah req.user use karein
+  if (!req.user || !review.author.equals(req.user._id)) {
     return res.status(403).json({ 
       success: false, 
       message: "You are not the author of this review" 
