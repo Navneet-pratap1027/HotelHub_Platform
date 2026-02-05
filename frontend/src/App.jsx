@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import ListingDetails from "./pages/ListingDetails";
 import NewListing from "./pages/NewListing"; 
-import EditListing from "./pages/EditListing"; // 1. EditListing import kiya
+import EditListing from "./pages/EditListing"; 
 import Navbar from "./components/Navbar";
 import Signup from "./pages/Signup"; 
 import Login from "./pages/Login";

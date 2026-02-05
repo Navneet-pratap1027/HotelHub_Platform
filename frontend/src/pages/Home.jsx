@@ -17,7 +17,6 @@ export default function Home() {
   const fetchListings = async (category = "Trending") => {
     setLoading(true);
     try {
-      // FIX: Yahan se "/api" hata diya hai kyunki base URL mein wo pehle se hai
       const endpoint = category === "Trending" ? "/listings" : `/listings/filter/${category}`;
       const res = await API.get(endpoint);
       setListings(res.data);
@@ -67,7 +66,7 @@ export default function Home() {
         {loading ? (
           <div className="flex flex-col justify-center items-center h-80 gap-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF385C]"></div>
-            <p className="text-gray-500 font-medium animate-pulse">Finding your next stay...</p>
+            <p className="text-gray-500 font-medium animate-pulse">HotelHub is finding your next stay...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-10">

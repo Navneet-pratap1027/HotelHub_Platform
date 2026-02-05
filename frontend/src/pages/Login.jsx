@@ -45,7 +45,7 @@ export default function Login() {
       {/* 2. Main Login Card */}
       <div className="w-full max-w-md p-2">
         <h2 className="text-3xl font-bold text-[#FF385C] mb-2 text-center tracking-tight">
-          Login on WanderLust
+          Login on HotelHub
         </h2>
         <p className="text-gray-500 text-center mb-8">Welcome back to your account</p>
         

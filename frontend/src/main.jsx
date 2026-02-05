@@ -7,7 +7,6 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {/* AuthProvider hamesha sabse bahar ya BrowserRouter ke bahar hona chahiye */}
     <AuthProvider>
       <BrowserRouter> 
         <App />

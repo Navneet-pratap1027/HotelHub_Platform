@@ -1,17 +1,16 @@
 import axios from "axios";
 
 const API = axios.create({
+  // baseURL se /v1 hata dein kyunki aapke backend routes direct /api se shuru ho rahe hain
   baseURL: "http://localhost:3000/api", 
-  withCredentials: true, // Isse cookies aur sessions backend tak jayenge
+  withCredentials: true, 
 });
 
-// Optional: Response Interceptor (Errors ko handle karne ke liye)
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Agar user authorized nahi hai toh login par bhej sakte hain
-      console.log("Unauthorized, please login.");
+      console.error("Unauthorized: Please login again.");
     }
     return Promise.reject(error);
   }

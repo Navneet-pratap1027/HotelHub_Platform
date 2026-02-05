@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-4 bg-gray-50">
         <div className="w-10 h-10 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin"></div>
-        <p className="text-rose-500 font-medium animate-pulse">Wanderlust is loading...</p>
+        <p className="text-rose-500 font-medium animate-pulse">HotelHub is loading...</p>
       </div>
     );
   }
