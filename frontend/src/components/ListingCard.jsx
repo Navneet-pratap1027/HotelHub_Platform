@@ -5,29 +5,28 @@ export default function ListingCard({ listing, setListings }) {
   const navigate = useNavigate();
 
   const handleDelete = async (e) => {
-    // 1. Isse card ka detail page nahi khulega
+    
     e.stopPropagation();
 
     if (window.confirm("Are you sure you want to delete this listing?")) {
       try {
-        // 2. Sahi URL: Port 3000 aur bina /v1 ke (Aapke backend ke mutabiq)
+        
         const response = await axios.delete(
-          `http://localhost:3000/api/listings/${listing._id}`,
+          `${import.meta.env.VITE_API_URL}/api/listings/${listing._id}`,
           { 
-            withCredentials: true // 3. SABSE ZARURI: Iske bina 401 error aayega
+            withCredentials: true 
           }
         );
 
-        // 4. Check success response
+        // Check success response
         if (response.status === 200 || response.data.success) {
-          // Frontend state se turant remove karein taaki UI update ho jaye
+          
           setListings((prev) => prev.filter((item) => item._id !== listing._id));
-          alert("Listing successfully deleted from Database!");
+          alert("Listing successfully deleted!");
         }
       } catch (error) {
         console.error("Delete Error:", error.response?.status);
         
-        // Agar 401 aata hai toh iska matlab cookies/session ka issue hai
         if (error.response?.status === 401) {
           alert("Unauthorized: Please login again as the owner.");
         } else {

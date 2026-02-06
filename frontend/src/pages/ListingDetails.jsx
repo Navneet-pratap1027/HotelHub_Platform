@@ -5,7 +5,6 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Star, MessageSquare, Send, Trash2, User, Compass, UtensilsCrossed, Wifi, Car, Tv } from "lucide-react";
 
-// Vite ke liye VITE_ prefix hona zaroori hai
 const MAP_TOKEN = import.meta.env.VITE_MAP_TOKEN || import.meta.env.MAP_TOKEN;
 
 export default function ListingDetails() {
@@ -20,7 +19,8 @@ export default function ListingDetails() {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/listings/${id}`);
+        
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/listings/${id}`);
         setListing(res.data);
       } catch (err) {
         console.error("Fetch error:", err);
@@ -171,8 +171,8 @@ export default function ListingDetails() {
               Book Now
             </button>
             <div className="pt-4 border-t text-sm text-gray-500 italic space-y-2">
-               <p className="flex justify-between"><span>Service fee</span><span>₹500</span></p>
-               <p className="flex justify-between font-bold text-black border-t pt-2 mt-2"><span>Total</span><span>₹{listing.price + 500}</span></p>
+                <p className="flex justify-between"><span>Service fee</span><span>₹500</span></p>
+                <p className="flex justify-between font-bold text-black border-t pt-2 mt-2"><span>Total</span><span>₹{listing.price + 500}</span></p>
             </div>
           </div>
         </div>

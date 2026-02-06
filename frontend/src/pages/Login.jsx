@@ -25,7 +25,7 @@ export default function Login() {
   };
 
   const googleLogin = () => {
-    window.location.href = "http://localhost:3000/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   };
 
   return (

@@ -13,7 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showTax, setShowTax] = useState(false);
 
-  // 1. Corrected Fetch Logic
+  // 1. Fetch Listings Logic
   const fetchListings = async (category = "Trending") => {
     setLoading(true);
     try {
@@ -22,6 +22,7 @@ export default function Home() {
       setListings(res.data);
     } catch (err) {
       console.error("Error fetching listings:", err);
+      // Agar backend se error aaye toh empty array set karein
       setListings([]); 
     } finally {
       setLoading(false);
@@ -43,12 +44,13 @@ export default function Home() {
     if (!window.confirm("Are you sure you want to delete this listing?")) return;
 
     try {
-      // FIX: Corrected delete endpoint
+      // ✅ Dynamic request using API instance
       await API.delete(`/listings/${id}`);
       setListings(listings.filter((l) => l._id !== id));
       toast.success("Listing deleted successfully!");
     } catch (err) {
-      toast.error("Failed to delete listing");
+      console.error("Delete failed:", err);
+      toast.error(err.response?.data?.message || "Failed to delete listing");
     }
   };
 
