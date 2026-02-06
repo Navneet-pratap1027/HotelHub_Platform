@@ -1,5 +1,5 @@
 
-# Wanderlust
+# HotelHub
 
 HotelHub is a comprehensive full stack web application designed to enhance the travel experience for tourists by providing a platform for sharing and discovering reviews and ratings. The app leverages modern web technologies to create an engaging and user-friendly interface.
 
@@ -9,7 +9,7 @@ HotelHub is a comprehensive full stack web application designed to enhance the t
 
 
 ## Live Project
-Check out the live project: https://wanderlust-67ck.onrender.com
+Check out the live project: https://hotel-hub-platform.vercel.app/
 ## Technologies Used:
 
  - Node.js
@@ -41,13 +41,13 @@ Check out the live project: https://wanderlust-67ck.onrender.com
 Clone the project
 
 ```bash
-  git clone https:https://github.com/Nitesh2802/Wanderlust.git
+  git clone https://github.com/Navneet-pratap1027/HotelHub_Platform
 ```
 
 Go to the project directory
 
 ```bash
-  cd Wanderlust
+  cd HOTELHUB
 ```
 
 Install dependencies
@@ -66,5 +66,8 @@ Start the server
   node app.js
 ```
 
-Visit http://localhost:8080 in your browser to explore Wanderlust locally
+## 🚀 Deployment
+- **Frontend:** Deployed on [Vercel](https://hotel-hub-platform.vercel.app)
+- **Backend:** Deployed on [Render](https://hotelhub-platform.onrender.com)
+- **Database:** MongoDB Atlas
 
