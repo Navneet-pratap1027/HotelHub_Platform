@@ -1,44 +1,59 @@
 const User = require("../models/user");
 
-module.exports.renderSignupForm = (req, res) => {
-  res.render("users/signup.ejs");
-};
-
-module.exports.signup = async (req, res) => {
+// Signup Logic
+module.exports.signup = async (req, res, next) => {
   try {
     let { username, email, password } = req.body;
     const newUser = new User({ email, username });
     const registeredUser = await User.register(newUser, password);
-    console.log(registeredUser);
+    
     req.login(registeredUser, (err) => {
       if (err) {
-        return next(err);
+        return res.status(500).json({ success: false, message: "Login failed after signup" });
       }
-      req.flash("success", "Welcome to HotelHub!");
-      res.redirect("/listings");
+      res.status(200).json({ 
+        success: true, 
+        message: "Welcome to HotelHub!",
+        user: {
+          _id: registeredUser._id,
+          username: registeredUser.username,
+          email: registeredUser.email,
+          role: registeredUser.role || "guest"
+        }
+      });
     });
   } catch (e) {
-    req.flash("error", e.message);
-    res.redirect("/signup");
+    res.status(400).json({ success: false, message: e.message });
   }
 };
 
-module.exports.renderLoginForm = (req, res) => {
-  res.render("users/login.ejs");
-};
-
+// Login Logic
 module.exports.login = async (req, res) => {
-  req.flash("success", "Welcome back to HotelHub!");
-  let redirectUrl = res.locals.redirectUrl || "/listings";
-  res.redirect(redirectUrl);
+  res.status(200).json({ 
+    success: true, 
+    message: "Welcome back to HotelHub!",
+    user: {
+      _id: req.user._id,
+      username: req.user.username,
+      email: req.user.email,
+      role: req.user.role || "guest"
+    }
+  });
 };
 
+// Logout Logic
 module.exports.logout = (req, res, next) => {
   req.logout((err) => {
     if (err) {
-      return next(err);
+      return res.status(500).json({ success: false, message: "Logout failed" });
     }
-    req.flash("success", "you are logged out!");
-    res.redirect("/listings");
+  
+    res.clearCookie("connect.sid", {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    });
+    res.status(200).json({ success: true, message: "Logged out successfully!" });
   });
 };

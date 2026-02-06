@@ -34,23 +34,31 @@ async function main() {
 
 // --- MIDDLEWARES ---
 
-// Dynamic CORS: Vercel link baad mein Render dashboard se add kar sakte hain
+// ✅ FIXED CORS: Live site ke liye strict origin aur credentials zaroori hain
 const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
 
 app.use(cors({
   origin: allowedOrigin,
-  credentials: true 
+  credentials: true, // Cookies allow karne ke liye
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
+// ✅ FIXED PROXY SETTING: Render/Vercel ke beech cookies transfer ke liye ye line MUST hai
+app.set("trust proxy", 1); 
+
 // --- SESSION & STORE ---
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: { secret: process.env.SECRET || "mysupersecret" },
   touchAfter: 24 * 3600,
+});
+
+store.on("error", (err) => {
+  console.log("ERROR in MONGO SESSION STORE", err);
 });
 
 const sessionOptions = {
@@ -62,7 +70,8 @@ const sessionOptions = {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Production mein true hona zaroori hai
+    // ✅ FIXED COOKIE: Production mein 'none' aur 'secure' hona hi chahiye
+    secure: process.env.NODE_ENV === "production", 
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
   },
 };
