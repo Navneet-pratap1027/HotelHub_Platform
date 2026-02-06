@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV != "production") {
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
@@ -34,9 +34,11 @@ async function main() {
 
 // --- MIDDLEWARES ---
 
-// Production mein origin handle karne ke liye update
+// Dynamic CORS: Vercel link baad mein Render dashboard se add kar sakte hain
+const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
+
 app.use(cors({
-  origin: process.env.NODE_ENV === "production" ? false : "http://localhost:5173", 
+  origin: allowedOrigin,
   credentials: true 
 }));
 
@@ -47,20 +49,20 @@ app.use(methodOverride("_method"));
 // --- SESSION & STORE ---
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  crypto: { secret: process.env.SECRET },
+  crypto: { secret: process.env.SECRET || "mysupersecret" },
   touchAfter: 24 * 3600,
 });
 
 const sessionOptions = {
   store,
-  secret: process.env.SECRET || "mysupersecretstring",
+  secret: process.env.SECRET || "mysupersecret",
   resave: false,
   saveUninitialized: false,
   cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Production mein secure cookies
+    secure: process.env.NODE_ENV === "production", // Production mein true hona zaroori hai
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
   },
 };
@@ -96,28 +98,11 @@ app.get("/api/company-info", (req, res) => {
   });
 });
 
-// --- STATIC FILES & FRONTEND SERVE (Monolith Setup) ---
-
-// Public/Uploads folder for Backend
+// --- STATIC FILES ---
 app.use("/public", express.static(path.join(__dirname, "/public")));
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
-// Agar Production hai toh Frontend ka 'dist' folder serve karein
-if (process.env.NODE_ENV === "production") {
-  // Yahan path dhyan se check karein (HotelHub/frontend/dist)
-  const frontendPath = path.join(__dirname, "../frontend/dist");
-  app.use(express.static(frontendPath));
-
-  app.get("*", (req, res) => {
-    // API routes ke alawa koi bhi route ho toh index.html bhejein
-    if (!req.path.startsWith("/api")) {
-      res.sendFile(path.join(frontendPath, "index.html"));
-    }
-  });
-}
-
 // --- ERROR HANDLING ---
-
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "API Endpoint not found!"));
 });
