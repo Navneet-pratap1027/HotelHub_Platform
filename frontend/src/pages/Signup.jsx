@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../api"; // Purana axios import hata kar apna API instance use karein
+import API from "../api"; 
 
 export default function Signup() {
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
@@ -9,30 +9,30 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      // API instance use karne se baseURL aur cookies automatic handle honge
       const res = await API.post("/auth/signup", formData);
-      alert("Account created successfully! Welcome to Wanderlust.");
+      
+      alert("Account created successfully! Welcome to HotelHub.");
+    
       navigate("/");
+      window.location.reload(); 
     } catch (err) {
       alert(err.response?.data?.message || "Signup failed. Please try again.");
     }
   };
 
   const googleLogin = () => {
-    // Google login ke liye direct window location hi best hai
-    // Note: Backend port 3000 hai aur route /auth/google hai
-    window.location.href = "http://localhost:3000/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   };
 
   return (
     <div className="max-w-md mx-auto mt-16 p-8 bg-white shadow-2xl rounded-3xl border border-gray-100">
-      <h2 className="text-3xl font-bold mb-2 text-center text-gray-800 tracking-tight">Join HotelHub</h2>
+      <h2 className="text-3xl font-bold mb-2 text-center text-[#FF385C] tracking-tight">Join HotelHub</h2>
       <p className="text-gray-500 text-center mb-8">Create an account to book unique stays</p>
 
       {/* Google Signup Button */}
       <button 
         onClick={googleLogin}
-        className="w-full flex items-center justify-center gap-3 border-2 border-gray-200 p-3 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 mb-6 active:scale-95"
+        className="w-full flex items-center justify-center gap-3 border-2 border-black p-3 rounded-xl font-bold hover:bg-gray-50 transition-all duration-200 mb-6 active:scale-95"
       >
         <img src="https://authjs.dev/img/providers/google.svg" alt="Google" className="w-5 h-5" />
         Continue with Google
@@ -47,26 +47,26 @@ export default function Signup() {
       <form onSubmit={handleSignup} className="flex flex-col gap-4">
         <input 
           type="text" placeholder="Username" required
-          className="p-3 border rounded-xl outline-rose-500 bg-gray-50 focus:bg-white transition-all"
+          className="p-3.5 border border-gray-300 rounded-xl outline-none focus:border-black bg-gray-50 focus:bg-white transition-all shadow-sm"
           onChange={(e) => setFormData({...formData, username: e.target.value})}
         />
         <input 
           type="email" placeholder="Email" required
-          className="p-3 border rounded-xl outline-rose-500 bg-gray-50 focus:bg-white transition-all"
+          className="p-3.5 border border-gray-300 rounded-xl outline-none focus:border-black bg-gray-50 focus:bg-white transition-all shadow-sm"
           onChange={(e) => setFormData({...formData, email: e.target.value})}
         />
         <input 
           type="password" placeholder="Password" required
-          className="p-3 border rounded-xl outline-rose-500 bg-gray-50 focus:bg-white transition-all"
+          className="p-3.5 border border-gray-300 rounded-xl outline-none focus:border-black bg-gray-50 focus:bg-white transition-all shadow-sm"
           onChange={(e) => setFormData({...formData, password: e.target.value})}
         />
-        <button className="bg-rose-500 text-white p-3 rounded-xl font-bold text-lg hover:bg-rose-600 shadow-lg shadow-rose-200 transition-all mt-2 active:scale-95">
+        <button className="bg-[#FF385C] text-white p-3.5 rounded-xl font-bold text-lg hover:bg-[#E31C5F] shadow-md transition-all mt-2 active:scale-95">
           Create Account
         </button>
       </form>
 
       <p className="text-center mt-6 text-gray-600">
-        Already have an account? <Link to="/login" className="text-rose-500 font-bold hover:underline">Log in</Link>
+        Already have an account? <Link to="/login" className="text-[#FF385C] font-bold hover:underline">Log in</Link>
       </p>
     </div>
   );
