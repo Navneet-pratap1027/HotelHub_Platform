@@ -12,12 +12,12 @@ router.get(
 router.get(
     "/callback",
     passport.authenticate("google", { 
-        failureRedirect: "http://localhost:5173/login" // React login page par bheje agar fail ho
+        // Frontend URL dashboard se uthayega
+        failureRedirect: `${process.env.FRONTEND_URL}/login` 
     }),
     function (req, res) {
-        // SUCCESS: React ke home page par redirect karein (Port 5173)
-        // Yahan se browser wapas aapke React app mein chala jayega
-        res.redirect("http://localhost:5173/");
+        // Success: Frontend ke home page par redirect
+        res.redirect(`${process.env.FRONTEND_URL}/`);
     }
 );
 
